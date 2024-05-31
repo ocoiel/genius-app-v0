@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+"use client";
+import { useState, useEffect, useRef } from "react";
 
 type Annotation = {
   id: string;
@@ -10,12 +11,18 @@ type Annotation = {
 
 const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
   const [annotations, setAnnotations] = useState<Annotation[]>(() => {
-    // Ao inicializar, verifica se existem anotações salvas no localStorage
-    const savedAnnotations = localStorage.getItem(
-      "annotations-genius-app-test"
-    );
-    return savedAnnotations ? JSON.parse(savedAnnotations) : [];
+    // Verifica se o localStorage está disponível
+    if (typeof window !== "undefined") {
+      // Se estiver disponível, tenta recuperar as anotações do localStorage
+      const savedAnnotations = localStorage.getItem("annotations");
+      // Verifica se há anotações salvas e as retorna, caso contrário, retorna um array vazio
+      return savedAnnotations ? JSON.parse(savedAnnotations) : [];
+    } else {
+      // Se o localStorage não estiver disponível (por exemplo, durante a build), retorna um array vazio
+      return [];
+    }
   });
+
   const [selectedText, setSelectedText] = useState<string>("");
   const [comment, setComment] = useState<string>("");
   const [selectionRange, setSelectionRange] = useState<[number, number] | null>(
@@ -168,6 +175,7 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
       lastIndex = annotation.endIndex;
     });
 
+    // Adiciona o restante do texto após a última anotação
     parts.push(
       <span key={`text-${lastIndex}`}>{lyrics.slice(lastIndex)}</span>
     );

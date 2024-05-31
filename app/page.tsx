@@ -1,4 +1,3 @@
-"use client";
 import Lyrics from "./components/Lyrics";
 
 const lyricsText = `[Letra de "Como Nossos Pais"]
