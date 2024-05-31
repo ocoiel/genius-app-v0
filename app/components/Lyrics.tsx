@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 type Annotation = {
+  id: string;
   startIndex: number;
   endIndex: number;
   text: string;
@@ -8,18 +9,32 @@ type Annotation = {
 };
 
 const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
-  const [annotations, setAnnotations] = useState<Annotation[]>([]);
+  const [annotations, setAnnotations] = useState<Annotation[]>(() => {
+    // Ao inicializar, verifica se existem anotações salvas no localStorage
+    const savedAnnotations = localStorage.getItem(
+      "annotations-genius-app-test"
+    );
+    return savedAnnotations ? JSON.parse(savedAnnotations) : [];
+  });
   const [selectedText, setSelectedText] = useState<string>("");
   const [comment, setComment] = useState<string>("");
   const [selectionRange, setSelectionRange] = useState<[number, number] | null>(
     null
   );
-  const [showAnnotation, setShowAnnotation] = useState<number | null>(null);
+  const [showAnnotation, setShowAnnotation] = useState<string | null>(null);
   const [position, setPosition] = useState<{
     top: number;
     left: number;
   } | null>(null);
   const lyricsRef = useRef<HTMLPreElement>(null);
+
+  useEffect(() => {
+    // Salva as anotações no localStorage sempre que houver uma alteração
+    localStorage.setItem(
+      "annotations-genius-app-test",
+      JSON.stringify(annotations)
+    );
+  }, [annotations]);
 
   // Efeito para adicionar um event listener para a tecla ESC para fechar o painel de comentários
   useEffect(() => {
@@ -101,6 +116,7 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
       setAnnotations([
         ...annotations,
         {
+          id: Math.random().toString(36).substring(2, 9),
           startIndex: selectionRange[0],
           endIndex: selectionRange[1],
           text: selectedText,
@@ -118,8 +134,15 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     setPosition(null);
   };
 
-  const handleAnnotationClick = (index: number) => {
-    setShowAnnotation(showAnnotation === index ? null : index);
+  const handleAnnotationClick = (id: string) => {
+    setShowAnnotation(showAnnotation === id ? null : id);
+  };
+
+  const handleDeleteAnnotation = (id: string) => {
+    const updatedAnnotations = annotations.filter(
+      (annotation) => annotation.id !== id
+    );
+    setAnnotations(updatedAnnotations);
   };
 
   // Função para renderizar a letra da música destacando as partes anotadas pelo usuário
@@ -127,25 +150,23 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     const parts: JSX.Element[] = [];
     let lastIndex = 0;
 
-    annotations
-      .sort((a, b) => a.startIndex - b.startIndex)
-      .forEach((annotation, index) => {
-        parts.push(
-          <span key={`text-${lastIndex}`}>
-            {lyrics.slice(lastIndex, annotation.startIndex)}
-          </span>
-        );
-        parts.push(
-          <span
-            key={`highlight-${index}`}
-            className="bg-yellow-300 cursor-pointer"
-            onClick={() => handleAnnotationClick(index)}
-          >
-            {lyrics.slice(annotation.startIndex, annotation.endIndex)}
-          </span>
-        );
-        lastIndex = annotation.endIndex;
-      });
+    annotations.forEach((annotation) => {
+      parts.push(
+        <span key={`text-${lastIndex}`}>
+          {lyrics.slice(lastIndex, annotation.startIndex)}
+        </span>
+      );
+      parts.push(
+        <span
+          key={annotation.id}
+          className="bg-yellow-300 cursor-pointer"
+          onClick={() => handleAnnotationClick(annotation.id)}
+        >
+          {lyrics.slice(annotation.startIndex, annotation.endIndex)}
+        </span>
+      );
+      lastIndex = annotation.endIndex;
+    });
 
     parts.push(
       <span key={`text-${lastIndex}`}>{lyrics.slice(lastIndex)}</span>
@@ -192,17 +213,22 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
       <div className="mt-4">
         <h3>Annotations:</h3>
         <ul>
-          {annotations.map((annotation, index) => (
-            <li key={index}>
+          {annotations.map((annotation) => (
+            <li key={annotation.id}>
               <strong
                 className="cursor-pointer text-blue-500 underline"
-                onClick={() => handleAnnotationClick(index)}
+                onClick={() => handleAnnotationClick(annotation.id)}
               >
                 {annotation.text}
               </strong>
-              : {annotation.comment} (start: {annotation.startIndex}, end:{" "}
-              {annotation.endIndex})
-              {showAnnotation === index && (
+              : {annotation.comment}
+              <button
+                onClick={() => handleDeleteAnnotation(annotation.id)}
+                className="ml-2 text-red-500"
+              >
+                Delete
+              </button>
+              {showAnnotation === annotation.id && (
                 <div className="mt-2 p-2 bg-gray-200 border border-gray-400 rounded">
                   {annotation.comment}
                 </div>
