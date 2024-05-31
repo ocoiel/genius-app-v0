@@ -157,12 +157,19 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     const parts: JSX.Element[] = [];
     let lastIndex = 0;
 
-    annotations.forEach((annotation) => {
+    // Ordena as anotações por ordem de início
+    const sortedAnnotations = [...annotations].sort(
+      (a, b) => a.startIndex - b.startIndex
+    );
+
+    sortedAnnotations.forEach((annotation) => {
+      // Adiciona o trecho de texto antes da anotação
       parts.push(
         <span key={`text-${lastIndex}`}>
           {lyrics.slice(lastIndex, annotation.startIndex)}
         </span>
       );
+      // Adiciona a anotação
       parts.push(
         <span
           key={annotation.id}
@@ -172,6 +179,7 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
           {lyrics.slice(annotation.startIndex, annotation.endIndex)}
         </span>
       );
+      // Atualiza o índice do último caractere processado
       lastIndex = annotation.endIndex;
     });
 

@@ -1,6 +1,6 @@
 import Lyrics from "./components/Lyrics";
 
-const lyricsText = `[Letra de "Como Nossos Pais"]
+const lyricsText1 = `[Letra de "Como Nossos Pais"]
 
 [Verso 1]
 Não quero lhe falar, meu grande amor
@@ -63,11 +63,39 @@ Ainda somos os mesmos e vivemos
 Ainda somos os mesmos e vivemos
 Como os nossos pais`;
 
+const lyricsText2 = `Mamãe quando eu crescer
+Eu quero ser artista
+Sucesso, grana e fama são o meu tesão
+Entre os bárbaros da feira
+Ser um reles conformista
+Nenhum supermercado satisfaz meu coração
+
+Mamãe quando eu crescer
+Eu quero ser rebelde
+Se conseguir licença
+Do meu broto e do patrão
+Um Gandhi Dandy, um grande
+Milionário socialista
+De carrão chego mais rápido a revolução
+
+Ah! Quanto rock dando toque tanto Blues
+E eu de óculos escuros vendo a vida e mundo azul
+
+Mamãe quando eu crescer
+Eu quero ser adolescente
+No planeta juventude
+Haverá vida inteligente?
+Plantar livro, escrever árvores
+Criar um filho feliz
+Um porquinho pra fazer de novo tudo o que eu já fiz
+Ah! Quanto rock dando toque tanto Blues
+E eu de óculos escuros vendo a vida e mundo azul`;
+
 const Home: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Lyrics Annotations</h1>
-      <Lyrics lyrics={lyricsText} />
+      <Lyrics lyrics={lyricsText2} />
     </div>
   );
 };
