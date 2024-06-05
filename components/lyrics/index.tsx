@@ -23,7 +23,7 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     top: number;
     left: number;
   } | null>(null);
-  const lyricsRef = useRef<HTMLPreElement>(null);
+  const lyricsRef = useRef<HTMLDivElement>(null);
 
   // Efeito para adicionar um event listener para a tecla ESC para fechar o painel de comentários
   useEffect(() => {
@@ -157,13 +157,13 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
 
   return (
     <div className="relative">
-      <pre
+      <div
         ref={lyricsRef}
         onMouseUp={handleMouseUp}
         className="whitespace-pre-wrap"
       >
         {highlightedLyrics()}
-      </pre>
+      </div>
       {selectedText && position && (
         <div
           className="absolute p-2 bg-gray-200 border border-gray-400 rounded"
