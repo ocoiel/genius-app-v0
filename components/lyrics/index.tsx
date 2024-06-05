@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+
 import {
   Drawer,
   DrawerContent,
@@ -15,6 +16,16 @@ import {
   DrawerDescription,
 } from "@/components/ui/drawer";
 import { Popover, PopoverContent } from "@/components/ui/popover";
+
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetClose,
+  SheetFooter,
+} from "@/components/ui/sheet";
 
 import { isRangeAnnotated, calculateCharacterOffset } from "./utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -50,6 +61,7 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
   const lyricsRef = useRef<HTMLDivElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -222,6 +234,9 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
         className="whitespace-pre-wrap"
       >
         {highlightedLyrics()}
+        <Button onClick={() => setSheetOpen(true)} className="mt-4">
+          Ver Anotações
+        </Button>
       </div>
       {selectedText && position && (
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -267,7 +282,44 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
           </DrawerContent>
         </Drawer>
       )}
-      <div className="mt-4">
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Anotações</SheetTitle>
+            <SheetDescription>Veja e gerencie suas anotações</SheetDescription>
+          </SheetHeader>
+          <ul>
+            {annotations.map((annotation) => (
+              <li key={annotation.id}>
+                <strong
+                  className="cursor-pointer text-blue-500 underline"
+                  onClick={() => handleAnnotationClick(annotation.id)}
+                >
+                  {annotation.text}
+                </strong>
+                : {annotation.comment}
+                <Button
+                  onClick={() => handleDeleteAnnotation(annotation.id)}
+                  className="ml-2 text-red-500"
+                >
+                  Delete
+                </Button>
+                {showAnnotation === annotation.id && (
+                  <div className="mt-2 p-2 bg-gray-200 border border-gray-400 rounded">
+                    {annotation.comment}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+          <SheetFooter>
+            <SheetClose asChild>
+              <Button variant="outline">Fechar</Button>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+      {/* <div className="mt-4">
         <h3>Annotations:</h3>
         <ul>
           {annotations.map((annotation) => (
@@ -293,7 +345,7 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
             </li>
           ))}
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 };
