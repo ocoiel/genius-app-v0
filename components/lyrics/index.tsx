@@ -128,9 +128,22 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
           const offsetTop = window.scrollY + rect.top;
           const offsetLeft = window.scrollX + rect.left;
 
+          // Calcula a posição centralizada (e incial) do popover
+          const selectedTextRect = window
+            .getSelection()
+            ?.getRangeAt(0)
+            .getBoundingClientRect();
+          const popoverTop = selectedTextRect
+            ? selectedTextRect.top + selectedTextRect.height / 2
+            : 0;
+          const popoverLeft = selectedTextRect
+            ? selectedTextRect.left + selectedTextRect.width / 2
+            : 0;
+
           setSelectedText(text);
           setSelectionRange([startIndex, endIndex]);
           setPosition({ top: offsetTop, left: offsetLeft });
+          setPopoverPosition({ top: popoverTop, left: popoverLeft });
           setPopoverOpen(true);
         }
       }
@@ -194,7 +207,7 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
       parts.push(
         <span
           key={annotation.id}
-          className="bg-yellow-300 cursor-pointer"
+          className="bg-yellow-300 dark:text-neutral-900 cursor-pointer"
           onClick={() => handleAnnotationClick(annotation.id)}
         >
           {lyrics.slice(annotation.startIndex, annotation.endIndex)}
@@ -240,17 +253,22 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
       </div>
       {selectedText && position && (
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-          <PopoverContent>
+          <PopoverContent
+            asChild
+            style={{
+              position: "absolute",
+              top: (popoverPosition?.top ?? position.top) - 50,
+              left: popoverPosition?.left ?? position.left,
+              transform: "translate(-50%, -50%)",
+            }}
+          >
             <Button
+              variant={"secondary"}
               onClick={() => {
                 setDialogOpen(true);
                 setPopoverOpen(false);
               }}
-              className="absolute p-2 rounded cursor-pointer"
-              style={{
-                top: popoverPosition?.top || 0,
-                left: popoverPosition?.left || 0,
-              }}
+              className="p-2 rounded cursor-pointer"
             >
               Escreva o significado
             </Button>
