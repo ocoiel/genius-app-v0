@@ -1,4 +1,4 @@
-import Lyrics from "./components/Lyrics";
+import Lyrics from "../components/lyrics";
 
 const lyricsText1 = `[Letra de "Como Nossos Pais"]
 

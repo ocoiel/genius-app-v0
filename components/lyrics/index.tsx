@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { isRangeAnnotated, calculateCharacterOffset } from "./lyrics/utils";
+import { isRangeAnnotated, calculateCharacterOffset } from "./utils";
 
 export type Annotation = {
   id: string;

@@ -1,4 +1,4 @@
-import { Annotation } from "../../Lyrics";
+import { Annotation } from "..";
 
 export const isRangeAnnotated = (
   annotations: Annotation[],
