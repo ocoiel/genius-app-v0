@@ -11,18 +11,7 @@ export type Annotation = {
 };
 
 const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
-  const [annotations, setAnnotations] = useState<Annotation[]>(() => {
-    // Verifica se o localStorage está disponível
-    if (typeof window !== "undefined") {
-      // Se estiver disponível, tenta recuperar as anotações do localStorage
-      const savedAnnotations = localStorage.getItem("annotations");
-      // Verifica se há anotações salvas e as retorna, caso contrário, retorna um array vazio
-      return savedAnnotations ? JSON.parse(savedAnnotations) : [];
-    } else {
-      // Se o localStorage não estiver disponível (por exemplo, durante a build), retorna um array vazio
-      return [];
-    }
-  });
+  const [annotations, setAnnotations] = useState<Annotation[]>([]);
 
   const [selectedText, setSelectedText] = useState<string>("");
   const [comment, setComment] = useState<string>("");
@@ -35,14 +24,6 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     left: number;
   } | null>(null);
   const lyricsRef = useRef<HTMLPreElement>(null);
-
-  useEffect(() => {
-    // Salva as anotações no localStorage sempre que houver uma alteração
-    localStorage.setItem(
-      "annotations-genius-app-test",
-      JSON.stringify(annotations)
-    );
-  }, [annotations]);
 
   // Efeito para adicionar um event listener para a tecla ESC para fechar o painel de comentários
   useEffect(() => {
