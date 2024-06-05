@@ -57,6 +57,17 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     };
   }, []);
 
+  //
+  const isRangeAnnotated = (startIndex: number, endIndex: number): boolean => {
+    return annotations.some(
+      (annotation) =>
+        (startIndex >= annotation.startIndex &&
+          startIndex < annotation.endIndex) ||
+        (endIndex > annotation.startIndex && endIndex <= annotation.endIndex) ||
+        (startIndex <= annotation.startIndex && endIndex >= annotation.endIndex)
+    );
+  };
+
   // Função para lidar com o evento de mouse up (quando o usuário termina de selecionar o texto)
   const handleMouseUp = () => {
     const selection = window.getSelection();
@@ -82,6 +93,11 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
             endOffset,
             preElement
           );
+
+          // Verifica se o trecho selecionado já está anotado
+          if (isRangeAnnotated(startIndex, endIndex)) {
+            return; // Não faz nada se o trecho já está anotado
+          }
 
           const rect = range.getBoundingClientRect();
           const offsetTop = window.scrollY + rect.top;
