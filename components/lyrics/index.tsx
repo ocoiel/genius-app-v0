@@ -1,6 +1,25 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer";
+import { Popover, PopoverContent } from "@/components/ui/popover";
+
 import { isRangeAnnotated, calculateCharacterOffset } from "./utils";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
 
 export type Annotation = {
   id: string;
@@ -23,7 +42,16 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     top: number;
     left: number;
   } | null>(null);
+  const [popoverPosition, setPopoverPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+
   const lyricsRef = useRef<HTMLDivElement>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Efeito para adicionar um event listener para a tecla ESC para fechar o painel de comentários
   useEffect(() => {
@@ -70,6 +98,20 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
             return; // Não faz nada se o trecho já está anotado
           }
 
+          if (position) {
+            const selectedTextRect = window
+              .getSelection()
+              ?.getRangeAt(0)
+              .getBoundingClientRect();
+            const popoverTop = selectedTextRect
+              ? selectedTextRect.top + selectedTextRect.height / 2
+              : 0;
+            const popoverLeft = selectedTextRect
+              ? selectedTextRect.left + selectedTextRect.width / 2
+              : 0;
+            setPopoverPosition({ top: popoverTop, left: popoverLeft });
+          }
+
           const rect = range.getBoundingClientRect();
           const offsetTop = window.scrollY + rect.top;
           const offsetLeft = window.scrollX + rect.left;
@@ -77,13 +119,14 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
           setSelectedText(text);
           setSelectionRange([startIndex, endIndex]);
           setPosition({ top: offsetTop, left: offsetLeft });
+          setPopoverOpen(true);
         }
       }
     }
   };
 
   const handleAddAnnotation = () => {
-    if (selectionRange) {
+    if (selectionRange && comment.length > 3) {
       setAnnotations([
         ...annotations,
         {
@@ -103,6 +146,8 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     setSelectionRange(null);
     setComment("");
     setPosition(null);
+    setDialogOpen(false);
+    setPopoverOpen(false);
   };
 
   const handleAnnotationClick = (id: string) => {
@@ -155,6 +200,20 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     return parts;
   };
 
+  const renderAnnotationPanel = () => (
+    <div className="flex flex-col gap-4 p-4 sm:p-0">
+      <Textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Qual o significado desse trecho?"
+        className="w-full border border-gray-300 rounded p-1 mt-1"
+      />
+      <Button onClick={handleAddAnnotation} className="p-1 rounded">
+        Add Annotation
+      </Button>
+    </div>
+  );
+
   return (
     <div className="relative">
       <div
@@ -165,30 +224,48 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
         {highlightedLyrics()}
       </div>
       {selectedText && position && (
-        <div
-          className="absolute p-2 bg-gray-200 border border-gray-400 rounded"
-          style={{ top: position.top - 50, left: position.left }}
-        >
-          <button
-            onClick={closeCommentPanel}
-            className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded"
-          >
-            X
-          </button>
-          <h4>{selectedText}</h4>
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Add a comment"
-            className="w-full border border-gray-300 rounded p-1 mt-1"
-          />
-          <button
-            onClick={handleAddAnnotation}
-            className="mt-1 bg-blue-500 text-white p-1 rounded"
-          >
-            Add Annotation
-          </button>
-        </div>
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+          <PopoverContent>
+            <Button
+              onClick={() => {
+                setDialogOpen(true);
+                setPopoverOpen(false);
+              }}
+              className="absolute p-2 rounded cursor-pointer"
+              style={{
+                top: popoverPosition?.top || 0,
+                left: popoverPosition?.left || 0,
+              }}
+            >
+              Escreva o significado
+            </Button>
+          </PopoverContent>
+        </Popover>
+      )}
+      {isDesktop ? (
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Adicionar Anotação</DialogTitle>
+              <DialogDescription>
+                Adicione um comentário para o trecho selecionado.
+              </DialogDescription>
+            </DialogHeader>
+            {renderAnnotationPanel()}
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Drawer open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Adicionar Anotação</DrawerTitle>
+              <DrawerDescription>
+                Adicione um comentário para o trecho selecionado.
+              </DrawerDescription>
+            </DrawerHeader>
+            {renderAnnotationPanel()}
+          </DrawerContent>
+        </Drawer>
       )}
       <div className="mt-4">
         <h3>Annotations:</h3>
@@ -202,12 +279,12 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
                 {annotation.text}
               </strong>
               : {annotation.comment}
-              <button
+              <Button
                 onClick={() => handleDeleteAnnotation(annotation.id)}
                 className="ml-2 text-red-500"
               >
                 Delete
-              </button>
+              </Button>
               {showAnnotation === annotation.id && (
                 <div className="mt-2 p-2 bg-gray-200 border border-gray-400 rounded">
                   {annotation.comment}
