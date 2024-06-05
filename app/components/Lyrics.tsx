@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { isRangeAnnotated, calculateCharacterOffset } from "./lyrics/utils";
 
-type Annotation = {
+export type Annotation = {
   id: string;
   startIndex: number;
   endIndex: number;
@@ -57,17 +58,6 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
     };
   }, []);
 
-  //
-  const isRangeAnnotated = (startIndex: number, endIndex: number): boolean => {
-    return annotations.some(
-      (annotation) =>
-        (startIndex >= annotation.startIndex &&
-          startIndex < annotation.endIndex) ||
-        (endIndex > annotation.startIndex && endIndex <= annotation.endIndex) ||
-        (startIndex <= annotation.startIndex && endIndex >= annotation.endIndex)
-    );
-  };
-
   // Função para lidar com o evento de mouse up (quando o usuário termina de selecionar o texto)
   const handleMouseUp = () => {
     const selection = window.getSelection();
@@ -95,7 +85,7 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
           );
 
           // Verifica se o trecho selecionado já está anotado
-          if (isRangeAnnotated(startIndex, endIndex)) {
+          if (isRangeAnnotated(annotations, startIndex, endIndex)) {
             return; // Não faz nada se o trecho já está anotado
           }
 
@@ -109,29 +99,6 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
         }
       }
     }
-  };
-
-  // Função para calcular o deslocamento de caracteres dentro do nó de texto
-  const calculateCharacterOffset = (
-    node: Node,
-    offset: number,
-    parent: HTMLElement
-  ): number => {
-    let charCount = 0;
-    const treeWalker = document.createTreeWalker(
-      parent,
-      NodeFilter.SHOW_TEXT,
-      null
-    );
-
-    while (treeWalker.nextNode()) {
-      const currentNode = treeWalker.currentNode;
-      if (currentNode === node) {
-        return charCount + offset;
-      }
-      charCount += currentNode.textContent?.length || 0;
-    }
-    return charCount;
   };
 
   const handleAddAnnotation = () => {
