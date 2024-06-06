@@ -17,20 +17,19 @@ import {
 } from "@/components/ui/drawer";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetClose,
-  SheetFooter,
-} from "@/components/ui/sheet";
-
 import { isRangeAnnotated, calculateCharacterOffset } from "./utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
+// import { DrawerComments } from "../comments/drawer-comments";
+
+export type AnnotationResponse = {
+  id: string;
+  text: string;
+  parentId: string | null; // null se é um comentário raíz (princial/não resposta)
+  likes: number;
+  responses: AnnotationResponse[];
+};
 
 export type Annotation = {
   id: string;
@@ -38,6 +37,8 @@ export type Annotation = {
   endIndex: number;
   text: string;
   comment: string;
+  likes: number;
+  responses: AnnotationResponse[];
 };
 
 const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
@@ -61,7 +62,6 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
   const lyricsRef = useRef<HTMLDivElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const [sheetOpen, setSheetOpen] = useState(false);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -78,6 +78,53 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const handleAddResponse = (
+    annotationId: string,
+    text: string,
+    parentId: string | null = null
+  ) => {
+    const newResponse: AnnotationResponse = {
+      id: Math.random().toString(36).substring(2, 9),
+      text,
+      parentId,
+      likes: 0,
+      responses: [],
+    };
+
+    setAnnotations((prevAnnotations) =>
+      prevAnnotations.map((annotation) =>
+        annotation.id === annotationId
+          ? {
+              ...annotation,
+              responses: [...annotation.responses, newResponse],
+            }
+          : annotation
+      )
+    );
+  };
+
+  const handleLike = (
+    annotationId: string,
+    responseId: string | null = null
+  ) => {
+    setAnnotations((prevAnnotations) =>
+      prevAnnotations.map((annotation) =>
+        annotation.id === annotationId
+          ? responseId
+            ? {
+                ...annotation,
+                responses: annotation.responses.map((response) =>
+                  response.id === responseId
+                    ? { ...response, likes: response.likes + 1 }
+                    : response
+                ),
+              }
+            : { ...annotation, likes: annotation.likes + 1 }
+          : annotation
+      )
+    );
+  };
 
   // Função para lidar com o evento de mouse up (quando o usuário termina de selecionar o texto)
   const handleMouseUp = () => {
@@ -160,6 +207,8 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
           endIndex: selectionRange[1],
           text: selectedText,
           comment: comment,
+          likes: 0,
+          responses: [],
         },
       ]);
       closeCommentPanel();
@@ -247,9 +296,6 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
         className="whitespace-pre-wrap"
       >
         {highlightedLyrics()}
-        <Button onClick={() => setSheetOpen(true)} className="mt-4">
-          Ver Anotações
-        </Button>
       </div>
       {selectedText && position && (
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -300,70 +346,7 @@ const Lyrics: React.FC<{ lyrics: string }> = ({ lyrics }) => {
           </DrawerContent>
         </Drawer>
       )}
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Anotações</SheetTitle>
-            <SheetDescription>Veja e gerencie suas anotações</SheetDescription>
-          </SheetHeader>
-          <ul>
-            {annotations.map((annotation) => (
-              <li key={annotation.id}>
-                <strong
-                  className="cursor-pointer text-blue-500 underline"
-                  onClick={() => handleAnnotationClick(annotation.id)}
-                >
-                  {annotation.text}
-                </strong>
-                : {annotation.comment}
-                <Button
-                  onClick={() => handleDeleteAnnotation(annotation.id)}
-                  className="ml-2 text-red-500"
-                >
-                  Delete
-                </Button>
-                {showAnnotation === annotation.id && (
-                  <div className="mt-2 p-2 bg-gray-200 border border-gray-400 rounded">
-                    {annotation.comment}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-          <SheetFooter>
-            <SheetClose asChild>
-              <Button variant="outline">Fechar</Button>
-            </SheetClose>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
-      {/* <div className="mt-4">
-        <h3>Annotations:</h3>
-        <ul>
-          {annotations.map((annotation) => (
-            <li key={annotation.id}>
-              <strong
-                className="cursor-pointer text-blue-500 underline"
-                onClick={() => handleAnnotationClick(annotation.id)}
-              >
-                {annotation.text}
-              </strong>
-              : {annotation.comment}
-              <Button
-                onClick={() => handleDeleteAnnotation(annotation.id)}
-                className="ml-2 text-red-500"
-              >
-                Delete
-              </Button>
-              {showAnnotation === annotation.id && (
-                <div className="mt-2 p-2 bg-gray-200 border border-gray-400 rounded">
-                  {annotation.comment}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div> */}
+      {/* <DrawerComments /> */}
     </div>
   );
 };
