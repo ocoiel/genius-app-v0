@@ -2,8 +2,8 @@ import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
 import * as React from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { cn } from "@/utils/cn";
-import { buttonVariants } from "@/theme/variants";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "./button";
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -37,7 +37,7 @@ const CommandInput = React.forwardRef<
     <CommandDialogClose
       className={cn(
         buttonVariants({
-          color: "outline",
+          variant: "outline",
           className: "text-xs p-1.5",
         })
       )}
