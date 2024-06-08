@@ -1,7 +1,7 @@
 import { UseSearch } from "@/types/search";
 import { useState } from "react";
 import useSWR from "swr";
-import { useDebounce } from "./utils";
+import { useDebounce } from "@/utils/use-debounce";
 import { fetcher } from "./fetcher";
 
 export function useSearch(urlApi = "/api/search"): UseSearch {

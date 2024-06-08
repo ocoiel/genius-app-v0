@@ -108,10 +108,10 @@ CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
 const CommandItem = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item> & {
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
     nested?: boolean;
   }
->(({ className, icon, nested = false, children, ...props }, ref) => (
+>(({ className, icon = null, nested = false, children, ...props }, ref) => (
   <CommandPrimitive.Item
     ref={ref}
     className={cn(

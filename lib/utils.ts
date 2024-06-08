@@ -6,27 +6,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
-
-export function useDebounce<T>(value: T, delayMs = 1000): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delayMs);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delayMs]);
-
-  return debouncedValue;
 }
 
 export interface Mode {
@@ -64,8 +47,3 @@ export const modes: Mode[] = [
     icon: PaperclipIcon,
   },
 ];
-
-export function useMode(): string | undefined {
-  const { slug } = useParams();
-  return Array.isArray(slug) && slug.length > 0 ? slug[0] : undefined;
-}

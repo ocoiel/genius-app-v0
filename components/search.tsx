@@ -6,7 +6,7 @@ import SearchDialog from "@/components/ui/search";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { modes } from "@/lib/utils";
-import { useMode } from "@/lib/utils";
+import { useMode } from "@/utils/use-mode";
 
 const itemVariants = cva(
   "rounded-md border px-2 py-0.5 text-xs font-medium text-muted-foreground transition-colors",
