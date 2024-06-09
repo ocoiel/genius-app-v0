@@ -117,8 +117,12 @@ function Search({
               <div className="flex p-2 gap-2 items-center">
                 <Avatar>
                   <AvatarFallback>{item.band[0]}</AvatarFallback>
+                  {/* Remove slash in item.url */}
                   <AvatarImage
-                    src={`https://www.vagalume.com.br/${item.band.toLocaleLowerCase()}/images/${item.band.toLocaleLowerCase()}.jpg`}
+                    src={`https://www.vagalume.com.br/${item.url.replace(
+                      /\//g,
+                      ""
+                    )}/images/${item.url.replace(/\//g, "")}.jpg`}
                     alt={item.band}
                   />
                 </Avatar>
