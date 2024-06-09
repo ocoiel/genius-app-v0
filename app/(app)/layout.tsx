@@ -18,16 +18,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
             url: "/",
             text: "Home",
           },
-          {
-            type: "main",
-            url: "/about",
-            text: "About",
-          },
-          {
-            type: "main",
-            url: "/contact",
-            text: "Contact",
-          },
         ]}
       />
       <main className="flex-1">{children}</main>

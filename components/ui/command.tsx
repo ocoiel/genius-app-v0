@@ -127,7 +127,7 @@ const CommandItem = React.forwardRef<
       )}
     >
       <div className="text-muted-foreground [&_svg]:size-4">{icon}</div>
-      <p className="w-0 flex-1 truncate">{children}</p>
+      <div className="w-0 flex-1 truncate">{children}</div>
     </div>
   </CommandPrimitive.Item>
 ));

@@ -24,16 +24,14 @@ export interface SharedProps {
   links?: SearchLink[];
 }
 
-interface SearchDialogProps
-  extends SharedProps,
-    Omit<SearchContentProps, "defaultItems"> {
+interface SearchDialogProps extends SharedProps, SearchContentProps {
   footer?: ReactNode;
 }
 
 interface SearchContentProps {
   search: string;
   onSearchChange: (v: string) => void;
-  results: SortedResult[] | "empty";
+  results: SortedResult[];
   defaultItems?: SortedResult[];
 }
 
@@ -41,10 +39,11 @@ export function SearchDialog({
   open,
   onOpenChange,
   footer,
+  defaultItems,
   links = [],
   ...props
 }: SearchDialogProps): React.ReactElement {
-  const defaultItems = useMemo(
+  const remapDefaultItems = useMemo(
     () =>
       links.map<SortedResult>(([name, link]) => ({
         id: link,
@@ -56,7 +55,7 @@ export function SearchDialog({
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange} footer={footer}>
-      <Search defaultItems={defaultItems} {...props} />
+      <Search defaultItems={defaultItems ?? remapDefaultItems} {...props} />
     </CommandDialog>
   );
 }
@@ -73,12 +72,13 @@ function Search({
   defaultItems = [],
   results,
 }: SearchContentProps): React.ReactElement {
+  console.log("🚀 ~ defaultItems:", defaultItems);
   const router = useRouter();
   const { setOpenSearch } = useSearchContext();
   const sidebar = useSidebar();
 
-  const items = results === "empty" ? defaultItems : results;
-  const hideList = results === "empty" && defaultItems.length === 0;
+  const items = !results.length ? defaultItems : results;
+  const hideList = results.length === 0 && defaultItems?.length === 0;
 
   const onOpen = (url: string): void => {
     router.push(url);
@@ -113,12 +113,6 @@ function Search({
                 onOpen(item.url);
               }}
               icon={item.title ? <Music /> : <User />}
-              // Agrupar musicas por artista (ta errado ainda.. vou consertar)
-              nested={
-                item.title
-                  ? item.band.toLowerCase().includes(search.toLowerCase())
-                  : false
-              }
             >
               <div className="flex p-2 gap-2 items-center">
                 <Avatar>

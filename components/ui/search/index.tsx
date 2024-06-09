@@ -6,6 +6,7 @@ import { useSearch } from "@/lib/client-search";
 import { modes, cn } from "@/lib/utils";
 import { useMode } from "@/utils/use-mode";
 import { cva } from "class-variance-authority";
+import { url } from "inspector";
 
 export interface DefaultSearchDialogProps extends SharedProps {
   api?: string;
@@ -42,6 +43,55 @@ export default function DefaultSearchDialog({
     <SearchDialog
       search={search}
       onSearchChange={setSearch}
+      defaultItems={[
+        { band: "Belchior", id: "belchior", url: "/belchior" },
+        {
+          band: "Chico Buarque",
+          id: "chico-buarque",
+          url: "/chico-buarque",
+        },
+        {
+          band: "Caetano Veloso",
+          id: "caetano-veloso",
+          url: "/caetano-veloso",
+        },
+        {
+          band: "Gilberto Gil",
+          id: "gilberto-gil",
+          url: "/gilberto-gil",
+        },
+        {
+          band: "Jorge Ben Jor",
+          id: "jorge-ben-jor",
+          url: "/jorge-ben-jor",
+        },
+        {
+          band: "Tim Maia",
+          id: "tim-maia",
+          url: "/tim-maia",
+          title: "Do leme ao pontal",
+        },
+        {
+          band: "Raul Seixas",
+          id: "raul-seixas",
+          url: "/raul-seixas",
+        },
+        {
+          band: "Novos Baianos",
+          id: "novos-baianos",
+          url: "/novos-baianos",
+        },
+        {
+          band: "Os Mutantes",
+          id: "os-mutantes",
+          url: "/os-mutantes",
+        },
+        {
+          band: "Secos & Molhados",
+          id: "secos-e-molhados",
+          url: "/secos-e-molhados",
+        },
+      ]}
       results={queryResult ?? []}
       footer={
         <div className="flex flex-row items-center gap-1">
