@@ -43,6 +43,7 @@ export function SearchDialog({
   links = [],
   ...props
 }: SearchDialogProps): React.ReactElement {
+  console.log("🚀 ~ open:", open);
   const defaultItems = useMemo(
     () =>
       links.map<SortedResult>(([name, link]) => ({
