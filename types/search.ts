@@ -1,10 +1,12 @@
 import { type SWRResponse } from "swr";
 
 export interface SortedResult {
+  band: string;
   id: string;
   url: string;
-  type: "page" | "heading" | "text";
-  content: string;
+  title?: string;
+  langID?: number;
+  fmRadios?: string[];
 }
 
 export interface UseSearch {

@@ -14,12 +14,14 @@ export default function DefaultSearchDialog({
   ...props
 }: DefaultSearchDialogProps): React.ReactElement {
   const { search, setSearch, query } = useSearch(api);
+  console.log("🚀 ~ search:", search);
+  console.log("🚀 ~ query:", query.data?.response?.docs);
 
   return (
     <SearchDialog
       search={search}
       onSearchChange={setSearch}
-      results={query.data ?? []}
+      results={query.data?.response?.docs ?? []}
       {...props}
     />
   );

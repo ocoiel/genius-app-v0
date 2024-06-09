@@ -1,4 +1,4 @@
-import { FileTextIcon, HashIcon, TextIcon } from "lucide-react";
+import { FileTextIcon, HashIcon, Music, TextIcon, User } from "lucide-react";
 import type { SortedResult } from "@/types/search";
 import { useRouter } from "next/navigation";
 import { useMemo, type ReactNode } from "react";
@@ -32,7 +32,6 @@ interface SearchContentProps {
   search: string;
   onSearchChange: (v: string) => void;
   results: SortedResult[] | "empty";
-
   defaultItems?: SortedResult[];
 }
 
@@ -43,13 +42,11 @@ export function SearchDialog({
   links = [],
   ...props
 }: SearchDialogProps): React.ReactElement {
-  console.log("🚀 ~ open:", open);
   const defaultItems = useMemo(
     () =>
       links.map<SortedResult>(([name, link]) => ({
-        type: "page",
-        id: name,
-        content: name,
+        id: link,
+        band: name,
         url: link,
       })),
     [links]
@@ -113,10 +110,10 @@ function Search({
               onSelect={() => {
                 onOpen(item.url);
               }}
-              icon={icons[item.type]}
-              nested={item.type !== "page"}
+              icon={item.title ? <Music /> : <User />}
+              // nested={item.type !== "page"}
             >
-              {item.content}
+              {item.title ? `${item.title} -` : null} {item.band}
             </CommandItem>
           ))}
         </CommandGroup>

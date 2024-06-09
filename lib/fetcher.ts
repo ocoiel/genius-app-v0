@@ -5,7 +5,7 @@ export async function fetcher<T>(
 ): Promise<T> {
   const params = new URLSearchParams();
 
-  if (query) params.set("query", query);
+  if (query) params.set("q", query);
 
   const response = await fetch(`${url}?${params.toString()}`, config);
 

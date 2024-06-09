@@ -51,7 +51,6 @@ export function Nav({
   children,
 }: NavProps & { items: LinkItemType[] }): React.ReactElement {
   const search = useSearchContext();
-  console.log("🚀 ~ search:", search);
   const [transparent, setTransparent] = useState(transparentMode !== "none");
 
   useEffect(() => {

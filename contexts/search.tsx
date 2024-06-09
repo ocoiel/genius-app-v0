@@ -57,7 +57,6 @@ export function SearchProvider({
   links,
 }: SearchProviderProps): React.ReactElement {
   const [isOpen, setIsOpen] = useState(preload ? false : undefined);
-  console.log("🚀 ~ isOpen:", isOpen);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent): void => {
