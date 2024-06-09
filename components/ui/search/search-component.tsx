@@ -80,7 +80,14 @@ function Search({
   const items = !results.length ? defaultItems : results;
   const hideList = results.length === 0 && defaultItems?.length === 0;
 
-  const onOpen = (url: string): void => {
+  const onOpen = (url: string, id?: string): void => {
+    if (url.endsWith(".html")) {
+      url = url.replace(".html", "");
+    }
+    if (id) {
+      url = `${url}-${id}`;
+    }
+
     router.push(url);
     setOpenSearch(false);
 
@@ -110,7 +117,7 @@ function Search({
               key={item.id}
               value={item.id}
               onSelect={() => {
-                onOpen(item.url);
+                onOpen(item.url, item.id);
               }}
               icon={item.title ? <Music /> : <User />}
             >
