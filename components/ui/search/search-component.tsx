@@ -13,6 +13,8 @@ import {
 import { cn } from "@/lib/utils";
 import { useSearchContext } from "@/contexts/search";
 import { useSidebar } from "@/contexts/sidebar";
+import { Avatar, AvatarFallback } from "../avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 export type SearchLink = [name: string, href: string];
 
@@ -111,9 +113,23 @@ function Search({
                 onOpen(item.url);
               }}
               icon={item.title ? <Music /> : <User />}
-              // nested={item.type !== "page"}
+              // Agrupar musicas por artista (ta errado ainda.. vou consertar)
+              nested={
+                item.title
+                  ? item.band.toLowerCase().includes(search.toLowerCase())
+                  : false
+              }
             >
-              {item.title ? `${item.title} -` : null} {item.band}
+              <div className="flex p-2 gap-2 items-center">
+                <Avatar>
+                  <AvatarFallback>{item.band[0]}</AvatarFallback>
+                  <AvatarImage
+                    src={`https://www.vagalume.com.br/${item.band.toLocaleLowerCase()}/images/${item.band.toLocaleLowerCase()}.jpg`}
+                    alt={item.band}
+                  />
+                </Avatar>
+                {item.title ? `${item.title} -` : null} {item.band}
+              </div>
             </CommandItem>
           ))}
         </CommandGroup>

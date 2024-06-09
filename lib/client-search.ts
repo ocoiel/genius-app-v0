@@ -18,5 +18,7 @@ export function useSearch(
     }
   );
 
-  return { search, setSearch, query };
+  const { docs: queryResult } = query.data?.response ?? {};
+
+  return { search, setSearch, query, queryResult };
 }
