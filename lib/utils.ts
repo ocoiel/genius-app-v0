@@ -50,7 +50,7 @@ export function hasActive(items: Node[], url: string): boolean {
 }
 
 export interface Mode {
-  param: string;
+  param: "music" | "artist" | "album";
   name: string;
   package: string;
   description: string;
