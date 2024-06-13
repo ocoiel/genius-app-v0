@@ -6,6 +6,7 @@ export async function fetcher<T>(
   const params = new URLSearchParams();
 
   if (query) params.set("q", query);
+  params.set("limitrows", "150");
 
   const response = await fetch(`${url}?${params.toString()}`, config);
 

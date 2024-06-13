@@ -26,6 +26,7 @@ export interface SharedProps {
 
 interface SearchDialogProps extends SharedProps, SearchContentProps {
   footer?: ReactNode;
+  tag?: "music" | "artist" | "album";
 }
 
 interface SearchContentProps {
@@ -33,6 +34,7 @@ interface SearchContentProps {
   onSearchChange: (v: string) => void;
   results: SortedResult[];
   defaultItems?: SortedResult[];
+  tag?: "music" | "artist" | "album";
 }
 
 export function SearchDialog({
@@ -71,13 +73,28 @@ function Search({
   onSearchChange,
   defaultItems = [],
   results,
+  tag,
 }: SearchContentProps): React.ReactElement {
-  console.log("🚀 ~ defaultItems:", defaultItems);
+  console.log("🚀 ~ results:", results);
   const router = useRouter();
   const { setOpenSearch } = useSearchContext();
   const sidebar = useSidebar();
 
   const items = !results.length ? defaultItems : results;
+
+  // If tag is music, filter items that only start with "l" (lyrics)
+  // If tag is artist, filter items that only start with "b" (band)
+  // If tag is album, filter items that only start with "a" (album)
+  const itemsFilteredByTag = items.filter((item) => {
+    if (tag === "music") {
+      return item.id?.toLowerCase().startsWith("l");
+    } else if (tag === "artist") {
+      return item.id.toLowerCase().startsWith("b");
+    } else if (tag === "album") {
+      return item.id.toLowerCase().startsWith("a");
+    }
+  });
+
   const hideList = results.length === 0 && defaultItems?.length === 0;
 
   const onOpen = (url: string, id?: string): void => {
@@ -112,7 +129,7 @@ function Search({
         </CommandEmpty>
 
         <CommandGroup value="result">
-          {items.map((item) => (
+          {itemsFilteredByTag.map((item) => (
             <CommandItem
               key={item.id}
               value={item.id}

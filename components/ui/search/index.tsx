@@ -6,7 +6,6 @@ import { useSearch } from "@/lib/client-search";
 import { modes, cn } from "@/lib/utils";
 import { useMode } from "@/utils/use-mode";
 import { cva } from "class-variance-authority";
-import { url } from "inspector";
 
 export interface DefaultSearchDialogProps extends SharedProps {
   api?: string;
@@ -32,7 +31,7 @@ export default function DefaultSearchDialog({
   const { search, setSearch, queryResult } = useSearch(api);
   console.log("🚀 ~ queryResult:", queryResult);
 
-  const defaultTag = useMode() ?? "music";
+  const defaultTag = (useMode() ?? "music") as "music" | "artist" | "album";
   const [tag, setTag] = useState(defaultTag);
 
   useEffect(() => {
@@ -43,6 +42,7 @@ export default function DefaultSearchDialog({
     <SearchDialog
       search={search}
       onSearchChange={setSearch}
+      tag={tag}
       defaultItems={[
         { band: "Belchior", id: "belchior", url: "/belchior" },
         {

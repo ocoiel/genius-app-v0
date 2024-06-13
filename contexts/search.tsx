@@ -27,12 +27,14 @@ interface SearchContextType {
   enabled: boolean;
   hotKey: HotKey[];
   setOpenSearch: (value: boolean) => void;
+  tag?: "music" | "artist" | "album";
 }
 
 const SearchContext = createContext<SearchContextType>({
   enabled: false,
   hotKey: [],
   setOpenSearch: () => undefined,
+  tag: "music",
 });
 
 export function useSearchContext(): SearchContextType {
