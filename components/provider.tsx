@@ -7,6 +7,9 @@ import type { ThemeProviderProps } from "next-themes/dist/types";
 import type { DefaultSearchDialogProps } from "@/components/ui/search";
 import { SidebarProvider } from "@/contexts/sidebar";
 import { SearchProvider, type SearchProviderProps } from "@/contexts/search";
+import { Tooltip } from "@radix-ui/react-tooltip";
+import { TooltipProvider } from "./ui/tooltip";
+import { SessionProvider } from "next-auth/react";
 
 interface SearchOptions
   extends Omit<SearchProviderProps, "options" | "children"> {
@@ -72,7 +75,9 @@ export function RootProvider({
         disableTransitionOnChange
         {...theme}
       >
-        {body}
+        <SessionProvider>
+          <TooltipProvider>{body}</TooltipProvider>
+        </SessionProvider>
       </ThemeProvider>
     );
 

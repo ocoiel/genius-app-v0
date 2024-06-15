@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { siteConfig } from "@/config/site";
+import { getUser } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { CommandMenu } from "./command-menu";
 import { Icons } from "@/components/icons";
@@ -8,8 +9,11 @@ import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 import { ModeToggle } from "./mode-toggle";
 import { buttonVariants } from "@/components/ui/button";
+import { UserDropdown } from "../user-dropdown";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const user = await getUser();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
@@ -55,6 +59,7 @@ export function SiteHeader() {
               </div>
             </Link>
             <ModeToggle />
+            <UserDropdown user={user} />
           </nav>
         </div>
       </div>

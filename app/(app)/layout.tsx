@@ -8,8 +8,8 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <>
-      {/* <SiteHeader /> */}
-      <Nav
+      <SiteHeader />
+      {/* <Nav
         title="Meaning"
         enableSearch
         items={[
@@ -19,7 +19,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
             text: "Home",
           },
         ]}
-      />
+      /> */}
+
       <main className="flex-1">{children}</main>
     </>
   );
